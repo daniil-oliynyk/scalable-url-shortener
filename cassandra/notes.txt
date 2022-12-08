@@ -1,0 +1,3 @@
+docker run -it --name master-node -d -e CASSANDRA_BROADCAST_ADDRESS=10.11.1.99 -v /home/student/host-volume:/var/lib/cassandra -p 7000:7000 -p 9042:9042 cassandra
+ docker run --name cassandra-node -d -e CASSANDRA_BROADCAST_ADDRESS=10.11.2.99 -p 7000:7000 -p 9042:9042 -e CASSANDRA_SEEDS=10.11.1.99 cassandra
+ docker run --name cassandra-node -d -e CASSANDRA_BROADCAST_ADDRESS=10.11.3.99 -p 7000:7000 -p 9042:9042 -e CASSANDRA_SEEDS=10.11.1.99 cassandra

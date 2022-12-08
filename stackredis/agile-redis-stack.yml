@@ -1,0 +1,87 @@
+version: "3.3"
+services:
+
+  redis-sentinel:
+    image: therbajaj/assignment:agile-redis-sentinel
+    volumes:
+      - sentinel-conf:/etc/redis
+    deploy:
+      mode: replicated
+      replicas: 4	
+    environment:
+      - REDIS_MASTER_HOST=${REDIS_MASTER_IP}
+      - SENTINEL_DOWN_AFTER=5000
+      - SENTINEL_FAILOVER=15000
+    networks:
+      - host
+
+  redis-master:
+    image: therbajaj/assignment:agile-redis
+    volumes:
+      - redis-data:/data
+      - redis-conf:/etc/redis
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints:
+          - node.hostname == ${REDIS_MASTER_HOSTNAME}
+    networks:
+      - host
+
+  redis-slave-node:
+    image: therbajaj/assignment:agile-redis
+    volumes:
+      - redis-data:/data
+      - redis-conf:/etc/redis
+    environment:
+      - REDIS_MASTER_HOST=${REDIS_MASTER_IP}
+    deploy:
+      mode: replicated
+      replicas: 3
+    networks:
+      - host
+
+  agile-python-app:
+    image: therbajaj/assignment:agile-python-app
+    ports:
+      - "38000:611"
+    deploy:
+      mode: replicated
+      replicas: 4
+      restart_policy:
+        condition: on-failure
+    environment:
+      - SENTINEL_HOST=${SENTINEL_IP}
+
+  writer-app:
+    image: therbajaj/assignment:agile-writer-app
+    ports:
+      - "39000:611"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    environment:
+      - SENTINEL_HOST=${SENTINEL_IP}
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - host
+
+volumes:
+  redis-data:
+  redis-conf:
+  sentinel-conf:
+networks:
+  host:
+    external: true

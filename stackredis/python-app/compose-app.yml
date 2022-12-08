@@ -1,0 +1,7 @@
+version: "3.3"
+services:
+  agile-python-app:
+    image: therbajaj/assignment:agile-python-app
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.yml

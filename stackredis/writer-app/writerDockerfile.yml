@@ -1,0 +1,20 @@
+from pypy:3-6
+
+WORKDIR /app
+
+# Bundle app source
+COPY writer.py /app
+COPY requirements.txt /app
+
+RUN apt-get update
+
+RUN apt-get install -y vim
+
+# install requirements
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+EXPOSE 611
+
+ENTRYPOINT ["pypy3", "writer.py"]
+

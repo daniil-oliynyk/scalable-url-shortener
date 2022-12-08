@@ -1,0 +1,20 @@
+#!/bin/bash
+USAGE="Usage: $0 IP1 IP2 IP3 ..."
+
+if [ "$#" == "0" ]; then
+	echo "$USAGE"
+	exit 1
+fi
+
+MASTER="$1"
+while (( "$#" )); do
+	if [ "$1" = "$MASTER" ]; 
+	then
+		ssh student@$1 "docker container stop cassandra-node; docker container rm cassandra-node;"
+		shift
+
+	else
+		ssh student@$1 "docker container stop cassandra-node; docker container rm cassandra-node;"
+                shift
+	fi
+done

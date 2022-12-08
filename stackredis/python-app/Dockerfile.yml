@@ -1,0 +1,30 @@
+from pypy:3-6
+
+WORKDIR /usr/src/app
+
+# Bundle app source
+COPY app.py /usr/src/app
+COPY requirements.txt /usr/src/app
+RUN mkdir -p /usr/src/app/templates
+COPY 404.html /usr/src/app/templates
+COPY redirect.html /usr/src/app/templates
+COPY redirect_recorded.html /usr/src/app/templates
+
+
+
+RUN apt-get update
+
+RUN apt-get install -y vim
+
+# install requirements
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+RUN mkdir -p /usr/src/logs
+
+
+EXPOSE 611
+
+VOLUME ["/usr/src/app"]
+
+ENTRYPOINT ["pypy3", "app.py"]
